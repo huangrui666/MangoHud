@@ -73,6 +73,8 @@ void init_spdlog()
          SPDLOG_ERROR("{}", ex.what());
       }
    }
+   SPDLOG_INFO("MANGOHUD_USE_LOGFILE {}",getenv("MANGOHUD_USE_LOGFILE"));
+   SPDLOG_INFO("LOGFILE {}",get_config_dir() + "/MangoHud/MangoHud.log");
 #ifndef NDEBUG
    spdlog::set_level(spdlog::level::level_enum::debug);
 #endif
@@ -244,13 +246,14 @@ void update_hud_info_with_frametime(struct swapchain_stats& sw_stats, const stru
 
    frametime = frametime_ms;
    fps = double(1000 / frametime_ms);
-
    if (elapsed >= params.fps_sampling_period) {
+      // SPDLOG_INFO("update_hud_info_with_frametime params.fps_sampling_period:{}", params.fps_sampling_period);
       if (!hw_update_thread)
          hw_update_thread = std::make_unique<hw_info_updater>();
       hw_update_thread->update(&params, vendorID);
 
       sw_stats.fps = 1000000000.0 * sw_stats.n_frames_since_update / elapsed;
+      SPDLOG_INFO("fps:{}", sw_stats.fps);
 
       if (params.enabled[OVERLAY_PARAM_ENABLED_time]) {
          std::time_t t = std::time(nullptr);
